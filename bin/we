@@ -1,0 +1,76 @@
+#!/bin/bash
+
+_we_read_config() {
+    . ".we"
+}
+
+_we_start() {
+    _we_read_config
+    docker start "$NAME"
+}
+
+_we_stop() {
+    _we_read_config
+    docker stop "$NAME"
+}
+
+_we_halt() {
+    docker ps | grep -v COMMAND | cut -d ' ' -f 1 | xargs docker stop
+}
+
+_we_enter() {
+    _we_read_config
+    docker exec -it "$NAME" lll /bin/bash
+}
+
+_we_root() {
+    _we_read_config
+    docker exec -it "$NAME" /bin/bash
+}
+
+_we_exec() {
+    _we_read_config
+    docker exec -it "$NAME" lll $@
+}
+
+_we_local() {
+    _we_read_config
+    export SOURCE_IP=$SOURCE_IP
+    export SOURCE_PORT=$SOURCE_PORT
+    exec $@
+}
+
+_we_usage() {
+    echo "Usage: we COMMAND" >&2
+    echo
+    echo "Available commands:"
+    echo "start   Start the container"
+    echo "stop    Stop the container"
+    echo "halt    Stop all running containers"
+    echo "enter   Enter to the container"
+    echo "root    Enter to the container as root"
+    echo "exec    Execute command in the container"
+    echo "local   Enter local command with environment variables"
+    exit 1
+}
+
+cmd="$1"
+shift
+
+if [ "x$cmd" == "xstart" ]; then
+    _we_start
+elif [ "x$cmd" == "xstop" ]; then
+    _we_stop
+elif [ "x$cmd" == "xhalt" ]; then
+    _we_halt
+elif [ "x$cmd" == "xenter" ]; then
+    _we_enter
+elif [ "x$cmd" == "xroot" ]; then
+    _we_root
+elif [ "x$cmd" == "xexec" ]; then
+    _we_exec $@
+elif [ "x$cmd" == "xlocal" ]; then
+    _we_local $@
+else
+    _we_usage
+fi
