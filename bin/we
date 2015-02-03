@@ -44,8 +44,6 @@ _we_exec() {
 
 _we_local() {
     _we_read_config
-    export SOURCE_IP=$SOURCE_IP
-    export SOURCE_PORT=$SOURCE_PORT
     exec $@
 }
 
