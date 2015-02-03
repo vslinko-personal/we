@@ -13,6 +13,17 @@ _we_read_config() {
     done
 }
 
+_we_sync_remote_handler() {
+    local_handler="$(dirname $(readlink $0))/_we_handler"
+    remote_handler="/usr/local/bin/_we_handler"
+    local_hash="$(md5sum $local_handler | cut -d ' ' -f 1)"
+    remote_hash="$(docker exec -it $NAME md5sum $remote_handler | cut -d ' ' -f 1)"
+    if [ "x$local_hash" != "x$remote_hash" ]; then
+        docker exec -i "$NAME" /bin/bash -c "cat > $remote_handler" < "$local_handler"
+        docker exec -i "$NAME" chmod a+x "$remote_handler"
+    fi
+}
+
 _we_start() {
     _we_read_config
     docker start "$NAME"
@@ -29,7 +40,8 @@ _we_halt() {
 
 _we_enter() {
     _we_read_config
-    docker exec -it "$NAME" lll /bin/bash
+    _we_sync_remote_handler
+    docker exec -it "$NAME" "$remote_handler" /bin/bash
 }
 
 _we_root() {
@@ -39,7 +51,8 @@ _we_root() {
 
 _we_exec() {
     _we_read_config
-    docker exec -it "$NAME" lll $@
+    _we_sync_remote_handler
+    docker exec -it "$NAME" "$remote_handler" $@
 }
 
 _we_local() {

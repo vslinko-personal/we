@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo $@ > /tmp/cmd
+chmod a+x /tmp/cmd
+su - vslinko -c "cd /home/vslinko/workspace; /tmp/cmd"
