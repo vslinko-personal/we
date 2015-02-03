@@ -1,7 +1,16 @@
 #!/bin/bash
 
 _we_read_config() {
-    . ".we"
+    ROOT="$(pwd)"
+    while [ "$ROOT" != "/" ]; do
+        if [ -r "$ROOT/.we" ]; then
+            cd "$ROOT"
+            . ".we"
+            break
+        else
+            ROOT="$(dirname $ROOT)"
+        fi
+    done
 }
 
 _we_start() {
