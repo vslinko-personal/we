@@ -65,6 +65,16 @@ _we_edit() {
     /bin/zsh -lic "emacs -c ."
 }
 
+_we_catch() {
+    _we_read_config
+    variable="CMD_$1"
+    if [ "x${!variable}" != "x" ]; then
+        /bin/zsh -lic "${!variable}"
+    else
+        _we_usage
+    fi
+}
+
 _we_usage() {
     echo "Usage: we COMMAND" >&2
     echo
@@ -100,5 +110,5 @@ elif [ "x$cmd" == "xlocal" ]; then
 elif [ "x$cmd" == "xedit" ]; then
     _we_edit
 else
-    _we_usage
+    _we_catch $cmd
 fi
