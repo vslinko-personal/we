@@ -62,9 +62,12 @@ _we_local() {
 
 _we_catch() {
     _we_read_config
-    variable="CMD_$1"
-    if [ "x${!variable}" != "x" ]; then
-        /bin/zsh -lic "${!variable}"
+    fg_variable="CMD_$1"
+    bg_variable="CMD_BG_$1"
+    if [ "x${!fg_variable}" != "x" ]; then
+        $SHELL -lic "${!fg_variable}"
+    elif [ "x${!bg_variable}" != "x" ]; then
+        ${!bg_variable} </dev/null 1>/dev/null 2>&1 &
     else
         _we_usage
     fi
