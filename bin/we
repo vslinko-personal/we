@@ -60,11 +60,6 @@ _we_local() {
     exec $@
 }
 
-_we_edit() {
-    _we_read_config
-    /bin/zsh -lic "emacs -c ."
-}
-
 _we_catch() {
     _we_read_config
     variable="CMD_$1"
@@ -86,7 +81,6 @@ _we_usage() {
     echo "root    Enter to the container as root"
     echo "exec    Execute command in the container"
     echo "local   Enter local command with environment variables"
-    echo "edit    Open project folder in emacs"
     exit 1
 }
 
@@ -107,8 +101,6 @@ elif [ "x$cmd" == "xexec" ]; then
     _we_exec $@
 elif [ "x$cmd" == "xlocal" ]; then
     _we_local $@
-elif [ "x$cmd" == "xedit" ]; then
-    _we_edit
 else
     _we_catch $cmd
 fi
